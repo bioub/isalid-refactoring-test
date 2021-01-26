@@ -18,6 +18,13 @@ class TemplateManager
         return $replaced;
     }
 
+    public function addPlaceholder($key, $value)
+    {
+        // remove unnecessary [ ]
+        $key = str_replace(['[', ']'], '', $key);
+        $this->placeholders[$key] = $value;
+    }
+
     private function configure(array $data) {
         $APPLICATION_CONTEXT = ApplicationContext::getInstance();
 

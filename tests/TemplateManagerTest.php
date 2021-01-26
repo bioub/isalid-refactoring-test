@@ -74,4 +74,50 @@ Bien cordialement,
 L'équipe de Shipper
 ", $message->content);
     }
+
+    public function testAddExtraPlaceholders()
+    {
+        $faker = \Faker\Factory::create();
+
+        $destinationId                  = $faker->randomNumber();
+        $expectedDestination = DestinationRepository::getInstance()->getById($destinationId);
+        $expectedUser        = ApplicationContext::getInstance()->getCurrentUser();
+
+        $quote = new Quote($faker->randomNumber(), $faker->randomNumber(), $destinationId, $faker->date());
+
+        $template = new Template(
+            1,
+            'Votre livraison à [quote:destination_name]',
+            "
+Bonjour [user:first_name],
+
+Merci de nous avoir contacté pour votre livraison à [quote:destination_name].
+
+Bien cordialement,
+
+[company:signature]
+");
+        $templateManager = new TemplateManager();
+
+        $templateManager->addPlaceholder('[company:signature]', 'NEW SIGNATURE');
+
+        $message = $templateManager->getTemplateComputed(
+            $template,
+            [
+                'quote' => $quote
+            ]
+        );
+
+        $this->assertEquals('Votre livraison à ' . $expectedDestination->countryName, $message->subject);
+        $this->assertEquals("
+Bonjour " . $expectedUser->firstname . ",
+
+Merci de nous avoir contacté pour votre livraison à " . $expectedDestination->countryName . ".
+
+Bien cordialement,
+
+NEW SIGNATURE
+", $message->content);
+    }
+
 }
