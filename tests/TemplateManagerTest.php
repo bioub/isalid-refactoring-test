@@ -32,7 +32,7 @@ class TemplateManagerTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function test()
+    public function testNewManager()
     {
         $faker = \Faker\Factory::create();
 
